@@ -1,0 +1,45 @@
+@primary-color: #1677FF;
+@header-height: 60px;
+@base-sidebar-width: 200px;
+
+.flex-between(){
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.flex(){
+  display: flex;
+}
+.flex-c-center(){
+  display: flex;
+  align-items: center;
+}
+.flex-r-center(){
+  display: flex;
+  align-items: center;
+}
+.flex-all-center(){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flex-all-start(){
+  display: flex;
+  justify-content: flex-start;
+}
+.flex-all-end(){
+  display: flex;
+  justify-content: flex-end;
+}
+.txt-overflow-s() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.txt-overflow-line(@line: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @line;
+  overflow: hidden;
+}
