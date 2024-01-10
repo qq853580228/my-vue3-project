@@ -2,7 +2,7 @@ import { Result } from 'ant-design-vue';
 import { notFound, errorRoute } from './staticModules/error';
 import { REDIRECT_ROUTE } from './staticModules/besidesLayout';
 import outsideLayout from './outsideLayout';
-import RouterView from '@/layout/router-view/index.vue';
+import RouterView from '@/layout/routerView/index.vue';
 import { isURL } from '@/utils/validate';
 import utils from '@/utils';
 import { asyncRoutes } from '@/routers/asyncModules';

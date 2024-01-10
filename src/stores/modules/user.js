@@ -152,7 +152,7 @@ export const userInfo = defineStore('useUserInfo', {
                 type: 1,
                 viewPath: 'user2/children1/index',
                 "isShow": true,
-                keepAlive: false,
+                keepAlive: true,
                 meta: {
                   title: '用户权限User2 - Children1',
                   roles: ['test'],
@@ -177,8 +177,8 @@ export const userInfo = defineStore('useUserInfo', {
         ];
         // 生成路由
         const generatorResult = await generatorDynamicRouter(menus);
-        console.log('generatorResult', generatorResult);
         this.menus = generatorResult.menus.filter((item) => !item.meta?.hideInMenu);
+        console.log('generatorResult', this.menus);
 
         // return { menus, perms, userInfo };
         return { menus };

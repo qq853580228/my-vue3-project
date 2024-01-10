@@ -1,4 +1,4 @@
-import RouterView from '@/layout/router-view/index.vue';
+import RouterView from '@/layout/routerView/index.vue';
 import { REDIRECT_NAME } from '@/stores/modules/mutation-types';
 import router from '@/routers';
 

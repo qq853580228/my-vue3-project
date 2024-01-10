@@ -8,7 +8,7 @@
         </template>
         <template v-if="item.children">
           <!-- 递归生成菜单 -->
-          <SiderItem :menus="item.children" />
+          <sider-item :menus="item.children" />
         </template>
       </a-sub-menu>
     </template>

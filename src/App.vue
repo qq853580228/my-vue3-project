@@ -4,7 +4,7 @@
   <!-- <Refs /> -->
   <!-- <Computed /> -->
   <!-- <HelloWorld /> -->
-  <router-view />
+  <config-provider />
 </template>
 
 <script setup>
@@ -13,4 +13,5 @@
   import Refs from './components/Refs';
   import Demo from './components/Demo';
   import Demo1 from './components/Demo1';
+  import ConfigProvider from '@/components/ConfigProvider/index.vue';
 </script>

@@ -18,29 +18,29 @@
               <a-menu style="user-select: none">
                 <a-menu-item key="1" :disabled="activeKey !== pageItem.fullPath" @click="reloadPage">
                   <reload-outlined />
-                  {{ $t('layout.multipleTab.reload') }}
+                  刷新页面
                 </a-menu-item>
                 <a-menu-item key="2" @click="removeTab(pageItem)">
                   <close-outlined />
-                  {{ $t('layout.multipleTab.close') }}
+                  关闭标签页
                 </a-menu-item>
-                <Menu.Divider />
+                <a-menu-divider />
                 <a-menu-item key="3" @click="closeLeft(pageItem)">
                   <vertical-right-outlined />
-                  {{ $t('layout.multipleTab.closeLeft') }}
+                  关闭左侧标签页
                 </a-menu-item>
                 <a-menu-item key="4" @click="closeRight(pageItem)">
                   <vertical-left-outlined />
-                  {{ $t('layout.multipleTab.closeRight') }}
+                  关闭右侧标签页
                 </a-menu-item>
-                <Menu.Divider />
+                <a-menu-divider />
                 <a-menu-item key="5" @click="closeOther(pageItem)">
                   <column-width-outlined />
-                  {{ $t('layout.multipleTab.closeOther') }}
+                  关闭其他标签页
                 </a-menu-item>
                 <a-menu-item key="6" @click="closeAll">
                   <minus-outlined />
-                  {{ $t('layout.multipleTab.closeAll') }}
+                  关闭全部标签页
                 </a-menu-item>
               </a-menu>
             </template>
@@ -49,32 +49,32 @@
       </a-tab-pane>
 
       <template #rightExtra>
-        <Dropdown :trigger="['click']" placement="bottomRight">
+        <a-dropdown :trigger="['click']" placement="bottomRight">
           <a class="ant-dropdown-link" @click.prevent>
-            <down-outlined :style="{ fontSize: '20px' }" />
+            <down-outlined :style="{ fontSize: '16px' }" />
           </a>
           <template #overlay>
-            <Menu style="user-select: none">
+            <a-menu style="user-select: none">
               <a-menu-item key="1" :disabled="activeKey !== route.fullPath" @click="reloadPage">
                 <reload-outlined />
-                {{ $t('layout.multipleTab.reload') }}
+                刷新页面
               </a-menu-item>
               <a-menu-item key="2" @click="removeTab(route)">
                 <close-outlined />
-                {{ $t('layout.multipleTab.close') }}
+                关闭标签页
               </a-menu-item>
-              <Menu.Divider />
+              <a-menu-divider />
               <a-menu-item key="5" @click="closeOther(route)">
                 <column-width-outlined />
-                {{ $t('layout.multipleTab.closeOther') }}
+                关闭其他标签页
               </a-menu-item>
               <a-menu-item key="6" @click="closeAll">
                 <minus-outlined />
-                {{ $t('layout.multipleTab.closeAll') }}
+                关闭全部标签页
               </a-menu-item>
-            </Menu>
+            </a-menu>
           </template>
-        </Dropdown>
+        </a-dropdown>
       </template>
     </a-tabs>
   </div>
@@ -83,6 +83,7 @@
 <script setup>
 import Storage from '@/utils/cache';
 // import { TABS_ROUTES } from '@/enums/cacheEnum';
+import { message } from 'ant-design-vue';
 import { useTabsViewStore, blackList } from '@/stores/modules/tabsView';
 import { REDIRECT_NAME } from '@/stores/modules/mutation-types';
 
@@ -203,20 +204,14 @@ const closeAll = () => {
 
 .tabs-view {
   border-top: 1px solid #eee;
-
   :deep(.tabs) {
-    .dark {
-      .ant-tabs-nav {
-        background: #000;
-      }
-    }
     .ant-tabs-nav {
       background: #fff;
       margin: 0;
       padding: 4px 20px 0 10px;
       user-select: none;
     }
-
+    
     .ant-tabs-tabpane {
       display: none;
     }
@@ -252,6 +247,15 @@ const closeAll = () => {
         .ant-tabs-tab-remove {
           width: unset;
         }
+      }
+    }
+  }
+}
+.dark {
+  .tabs-view {
+    :deep(.tabs) {
+      .ant-tabs-nav {
+        background: #000;
       }
     }
   }

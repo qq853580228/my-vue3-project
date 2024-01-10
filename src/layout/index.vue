@@ -13,12 +13,16 @@
       <sider :collapsed="collapsed" :theme="getTheme" class="sidebar-container" />
     </a-layout-sider>
     <a-layout>
-      <div class="main-container">
-        <div :class="{ 'fixed-header': fixedHeader }">
-          <Header v-model:collapsed="collapsed" />
-          <!-- <tags-view /> -->
-        </div>
-        
+      <div :class="{ 'fixed-header': layoutSetting.fixedHeader, hasTabsView: layoutSetting.tabsView }" class="main-container">
+        <Header v-model:collapsed="collapsed">
+          <template v-if="layoutSetting.layout === 'topmenu'" #default>
+            <Logo :collapsed="collapsed" :title="layoutSetting.title" />
+            <div class="topmenu">
+              <sider :collapsed="collapsed" :theme="getTheme" class="sidebar-container" />
+            </div>
+          </template>
+        </Header>
+        <tabs-view />
         <a-layout-content>
           <app-main />
         </a-layout-content>
@@ -32,14 +36,15 @@
   import Sider from './components/Sider/index.vue';
   import Logo from './components/Logo/index.vue';
   import AppMain from './components/AppMain.vue';
-  import TagsView from './components/TagsView/index.vue';
+  import TabsView from './components/TabsView/index.vue';
   const settings = useSetting();
-  const { layoutSetting } = storeToRefs(settings);
+  const { layoutSetting, getNavTheme } = storeToRefs(settings);
   const collapsed = ref(false);
   // 自定义侧边栏菜单收缩和展开时的宽度
   const asiderWidth = computed(() => (collapsed.value ? 80 : 200));
-  const getTheme = computed(() => (settings.getNavTheme === 'light' ? 'light' : 'dark'));
-  const fixedHeader = computed(() => layoutSetting.fixedHeader);
+  const getTheme = computed(() => (getNavTheme.value === 'light' ? 'light' : 'dark'));
+  // const getTheme = computed(() => (settings.getNavTheme === 'light' ? 'light' : 'dark'));
+  // const fixedHeader = computed(() => layoutSetting.fixedHeader);
 </script>
 <style lang="less" scoped>
 .layout {

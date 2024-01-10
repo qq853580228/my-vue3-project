@@ -34,7 +34,6 @@
   const activeKey = ref(route.name || tabs[0].name);
 
   watch(activeKey, (name) => {
-    console.log(activeKey);
     router.push({ name });
   });
 </script>

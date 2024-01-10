@@ -43,7 +43,7 @@
   const state = reactive({
     openKeys: [],
     selectedKeys: [currentRoute.name],
-    rootSubmenuKeys: [],
+    rootSubmenuKeys: menus.value.map(i => i.name),
   });
   // 根据activeMenu获取指定的menu
   const getTargetMenuByActiveMenuName = activeMenu => {
@@ -52,9 +52,14 @@
   // 获取当前打开的子菜单
   const getOpenKeys = () => {
     const meta = currentRoute.meta;
-    return meta.hidden ? 
+    console.log('meta', meta);
+    if (meta?.activeMenu) {
+      const targetMenu = getTargetMenuByActiveMenuName(meta.activeMenu);
+      return targetMenu?.meta?.namePath ?? [meta?.activeMenu];
+    }
+    return meta.hideInMenu ? 
       state.openKeys || [] : 
-      currentRoute.meta.namePath ?? currentRoute.matched.slice(1).map((n) => n.name);
+      meta.namePath ?? currentRoute.matched.slice(1).map((n) => n.name);
   }
   // 监听菜单收缩状态
   watch(
@@ -77,7 +82,6 @@
         state.selectedKeys = [targetMenu?.name ?? meta?.activeMenu];
       } else {
         state.selectedKeys = [currentRoute.meta?.activeMenu ?? currentRoute.name];
-        console.log('state.selectedKeys', state.selectedKeys);
       }
     },
     {
@@ -103,6 +107,7 @@
     } else {
       state.openKeys = latestOpenKey ? [latestOpenKey] : [];
     }
+    // console.log('rootSubmenuKeys', state.openKeys);
   };
 </script>
 
@@ -116,7 +121,7 @@
     }
 
     &.is-side-menu {
-      height: calc(100vh - 50px);
+      height: calc(100vh - @header-height);
     }
   }
 </style>

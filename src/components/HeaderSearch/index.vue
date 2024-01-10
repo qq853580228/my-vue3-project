@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'show': show }" class="header-search">
-    <svg-icon size="14" name="search" @click.stop="click" />
+    <svg-icon size="16" name="search" @click.stop="click" />
     <span @click.stop="">
       <a-select
         ref="headerSearchSelectRef"

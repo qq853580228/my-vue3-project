@@ -31,12 +31,13 @@ const setting = defineStore('layoutSetting', {
       this.collapsed = !this.collapsed;
     },
     updateLayoutSetting(settings) {
-      this.layoutSetting = { ...this.layoutSetting, ...settings };
-      if (settings.navTheme) {
-        this.toggleTheme(settings.navTheme)
+      this.layoutSetting = Object.assign(this.layoutSetting, settings);
+      const { navTheme, colorPrimary } = this.layoutSetting;
+      if (navTheme) {
+        this.toggleTheme(navTheme)
       }
-      if (settings.colorPrimary) {
-        this.setColorPrimary(settings.colorPrimary);
+      if (colorPrimary) {
+        this.setColorPrimary(colorPrimary);
       }
     },
     toggleTheme(navTheme) {
@@ -60,7 +61,7 @@ const setting = defineStore('layoutSetting', {
     // 修改存储位置 默认在localStorage中
     storage: localStorage,
     // 只想持久化单个数据
-    paths: ['layoutSetting'], // 要持久化的属性
+    // paths: ['layoutSetting'], // 要持久化的属性
   },
 });
 

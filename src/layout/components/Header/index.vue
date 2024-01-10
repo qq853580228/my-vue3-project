@@ -1,27 +1,12 @@
 <template>
   <a-layout-header :style="headerStyle" class="layout-header">
-    <div class="hamburger-container" @click="() => emit('update:collapsed', !collapsed)">
-      <component :style="{ fontSize: '18px' }" :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined" />
-    </div>
-    <div class="breadcrumb-container">
-      <a-breadcrumb>
-        <a-breadcrumb-item v-for="(routeItem, rotueIndex) in menus" :key="routeItem?.name">
-          {{routeItem?.meta?.title}}
-          <template v-if="routeItem?.children?.length" #overlay>
-            <a-menu :selected-keys="getSelectKeys(rotueIndex)">
-              <template v-for="childItem in routeItem?.children" :key="childItem.name">
-                <a-menu-item
-                  v-if="!childItem.meta?.hideInMenu && !childItem.meta?.hideInBreadcrumb"
-                  :key="childItem.name"
-                  @click="clickMenuItem(childItem)"
-                >
-                  {{ childItem.meta?.title }}
-                </a-menu-item>
-              </template>
-            </a-menu>
-          </template>
-        </a-breadcrumb-item>
-      </a-breadcrumb>
+    <div class="layout-header-left">
+      <slot>
+        <div class="hamburger-container" @click="() => emit('update:collapsed', !collapsed)">
+          <component :style="{ fontSize: '18px' }" :is="collapsed ? MenuUnfoldOutlined : MenuFoldOutlined" />
+        </div>
+        <breadcrumb />
+      </slot>
     </div>
     <div class="right-menu">
       <header-search id="header-search" class="right-menu-item" />
@@ -39,7 +24,7 @@
               <router-link to="/account/settings">
                 <a-menu-item>个人中心</a-menu-item>
               </router-link>
-              <a-menu-item v-if="layoutSetting.showSettings">
+              <a-menu-item v-if="layoutSetting.showSettings" @click="showSetting">
                 <span>布局设置</span>
               </a-menu-item>
               <a-menu-divider />
@@ -51,6 +36,7 @@
         </a-dropdown>
       </div>
     </div>
+    <setting ref="settingRef" />
   </a-layout-header>
 </template>
 
@@ -60,12 +46,16 @@
     MenuUnfoldOutlined,
   } from '@ant-design/icons-vue';
   import { message, Modal } from 'ant-design-vue';
+  import Setting from '@/layout/components/Setting';
   import useSetting from '@/stores/modules/settings';
   import Screenfull from '@/components/Screenfull';
   import HeaderSearch from '@/components/HeaderSearch/index.vue';
+  import Breadcrumb from '../Breadcrumb/index.vue';
   import { userInfo } from '@/stores/modules/user';
   import useKeepAliveStore from '@/stores/modules/keepAlive';
   import { LOGIN_NAME } from '@/stores/modules/mutation-types';
+
+  const settingRef = shallowRef(null);
 
   defineProps({
     collapsed: {
@@ -83,73 +73,16 @@
   const headerStyle = computed(() => {
     const { navTheme, layout } = layoutSetting;
     const isDark = navTheme === 'dark' && layout === 'topmenu';
+    console.log('navTheme', navTheme);
     return {
       backgroundColor: navTheme === 'realDark' || isDark ? '' : 'rgba(255, 255, 255, 0.85)',
       color: isDark ? 'rgba(255, 255, 255, 0.85)' : '',
     };
   });
 
-  const menus = computed(() => {
-    if (route.meta?.namePath) {
-      let children = userStore.menus;
-      const paths = route.meta?.namePath?.map((item) => {
-        const a = children.find((n) => n.name === item);
-        children = a?.children || [];
-        return a;
-      });
-      return [
-        {
-          name: '__index',
-          meta: {
-            title: '首页',
-          },
-          children: userStore.menus,
-        },
-        ...paths,
-      ];
-    }
-    return route.matched;
-  });
-
-  const getSelectKeys = (rotueIndex) => {
-    return [menus.value[rotueIndex + 1]?.name];
-  };
-
-  const findLastChild = (route = {}) => {
-    if (typeof route?.redirect === 'object') {
-      const redirectValues = Object.values(route.redirect);
-      if (route?.children?.length) {
-        const target = route.children.find((n) =>
-          redirectValues.some((m) => [n.name, n.path, n.meta?.fullPath].some((v) => v === m)),
-        );
-        return findLastChild(target);
-      }
-      return redirectValues.find((n) => typeof n === 'string');
-    } else if (typeof route?.redirect === 'string') {
-      if (route?.children?.length) {
-        const target = route.children.find((n) =>
-          [n.name, n.path, n.meta?.fullPath].some((m) => m === route?.redirect),
-        );
-        return findLastChild(target);
-      }
-      return route?.redirect;
-    }
-    return route;
-  };
-  const getRouteByName = (name) => router.getRoutes().find((n) => n.name === name);
-
-  // 点击菜单
-  const clickMenuItem = (menuItem) => {
-    const lastChild = findLastChild(menuItem);
-    console.log('lastChild', menuItem, lastChild);
-
-    const targetRoute = getRouteByName(lastChild?.name);
-    const { isExt, openMode } = targetRoute?.meta || {};
-    if (isExt && openMode !== 2) {
-      window.open(lastChild?.name);
-    } else {
-      router.push({ name: lastChild?.name });
-    }
+  // 布局设置
+  const showSetting = () => {
+    settingRef.value.showDrawer();
   };
 
   // 退出登录
@@ -186,13 +119,26 @@
 <style lang="less" scoped>
   .layout-header {
     position: relative;
-    padding-left: 20px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 0;
     padding-right: 12px;
     height: @header-height;
-    background: #fff;
+    .layout-header-left {
+      display: flex;
+      width: calc(100% - 150px);
+      flex: 1;
+      :deep(.topmenu) {
+        width: calc(100% - 160px);
+        flex: 1;
+        .menu-container {
+          height: 100%;
+        }
+      }
+    }
     .hamburger-container {
+      padding-left: 12px;
       height: 100%;
-      float: left;
       cursor: pointer;
       transition: background 0.3s;
       -webkit-tap-highlight-color: transparent;
@@ -200,15 +146,9 @@
         background: rgba(0, 0, 0, 0.025);
       }
     }
-    .breadcrumb-container {
-      float: left;
-      padding-left: 20px;
-      height: 100%;
-      display: inline-flex;
-      align-items: center;
-    }
     .right-menu {
-      float: right;
+      flex-shrink: 0;
+      min-width: 150px;
       height: 100%;
       line-height: @header-height;
       &:focus {

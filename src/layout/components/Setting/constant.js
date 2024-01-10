@@ -23,9 +23,9 @@ export const defaultSetting = {
   topNav: false,
 
   /**
-   * 是否显示 tagsView
+   * 是否显示 tabsView
    */
-  tagsView: true,
+  tabsView: true,
 
   /**
    * 是否固定头部

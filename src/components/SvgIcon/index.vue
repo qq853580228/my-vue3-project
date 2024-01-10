@@ -41,4 +41,9 @@
     fill: currentcolor;
     vertical-align: -0.15em;
   }
+  .dark {
+    .svg-icon {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
 </style>

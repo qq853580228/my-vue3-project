@@ -17,12 +17,13 @@ const keepAlive = defineStore('keepAlive', {
         });
       }
     },
-    delete() {
+    delete(name) {
       if (typeof name === 'string') {
         this.list = this.list.filter(v => v !== name);
       } else {
         this.list = this.list.filter(v => !name.includes(v));
       }
+      console.log('keepAlive', this.list);
     },
     clear() {
       this.list = [];

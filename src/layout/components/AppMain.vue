@@ -27,7 +27,7 @@
 
 <style lang="less" scoped>
 .app-main {
-  /* 50= navbar  50  */
+  padding: 12px;
   height: calc(100vh - @header-height);
   width: 100%;
   position: relative;
@@ -38,14 +38,14 @@
   padding-top: @header-height;
 }
 
-.hasTagsView {
+.hasTabsView {
   .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    height: calc(100vh - 104px);
+    /* 84 = navbar + tags-view = 60 + 45 */
+    height: calc(100vh - 105px);
   }
 
   .fixed-header + .app-main {
-    padding-top: 104px;
+    padding-top: 105px;
   }
 }
 </style>

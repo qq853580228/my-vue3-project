@@ -3,7 +3,7 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { userInfo } from '@/stores/modules/user';
 import keepAlive from '@/stores/modules/keepAlive';
-import settings from '@/stores/modules/settings';
+import useSetting from '@/stores/modules/settings';
 import { ACCESS_TOKEN, INDEX_MAIN_PAGE_PATH, LOGIN_PAGE_PATH, REDIRECT_NAME, whiteList } from "@/stores/modules/mutation-types";
 
 // 路由守卫
@@ -11,7 +11,7 @@ router.beforeEach(async (to, from, next) => {
   NProgress.start(); // start progress bar
   const { [ACCESS_TOKEN]: token, roles, menus, afterLogin } = userInfo();
   if (token) {
-    to.meta.title && settings().setTitle(to.meta.title);
+    to.meta.title && useSetting().setTitle(to.meta.title);
     if (to.path === LOGIN_PAGE_PATH) {
       next({ path: INDEX_MAIN_PAGE_PATH });
       NProgress.done();

@@ -38,7 +38,7 @@ export const useTabsViewStore = defineStore({
         }
         return prev;
       }, []);
-      keepAliveStore.remove(compNames);
+      keepAliveStore.delete(compNames);
     },
     /** 初始化标签页 */
     initTabs(routes) {

@@ -30,8 +30,8 @@
     opacity: 0;
   }
   .logo {
-    height: 50px;
-    line-height: 50px;
+    height: @header-height;
+    line-height: @header-height;
     padding-left: 24px;
     white-space: nowrap;
     img {
@@ -44,8 +44,10 @@
     .title {
       display: inline-block;
       margin: 0;
+      max-width: 144px;
+      .txt-overflow-s();
       font-weight: 600;
-      line-height: 50px;
+      line-height: @header-height;
       font-size: 14px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;

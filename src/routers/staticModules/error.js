@@ -1,5 +1,5 @@
 import { PAGE_NOT_FOUND_NAME } from '@/stores/modules/mutation-types';
-import RouterView from '@/layout/router-view/index.vue';
+import RouterView from '@/layout/routerView/index.vue';
 
 const moduleName = 'error';
 
