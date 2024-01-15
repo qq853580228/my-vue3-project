@@ -38,9 +38,9 @@ export default defineComponent({
   setup(props, { attrs }) {
     // 如果外部传进来字体图标路径，则覆盖默认的
     if (props.scriptUrl) {
-      scriptUrls = [...new Set(scriptUrls.concat(props.scriptUrl))];
+      // scriptUrls = [...new Set(scriptUrls.concat(props.scriptUrl))];
       MyIconFont = createFromIconfontCN({
-        scriptUrl: scriptUrls,
+        scriptUrl: props.scriptUrls,
       });
     }
 
