@@ -24,7 +24,7 @@ export function filterAsyncRoute(
     .filter((item) => item.type !== 2 && item.isShow)
     .map((item) => {
       // const { router, viewPath, name, icon, orderNum, keepAlive, isExt, openMode } = item;
-      const { router, viewPath, name, orderNum, keepAlive, isExt, openMode, meta } = item;
+      const { router, viewPath, name, orderNum, keepAlive, isExt, openMode, meta, routeVal } = item;
       let fullPath = '';
       const pathPrefix = lastNamePath.at(-1) || '';
       if (isURL(router)) {
@@ -45,23 +45,27 @@ export function filterAsyncRoute(
       realRoutePath = realRoutePath.startsWith('/') ? realRoutePath.slice(1) : realRoutePath;
       realRoutePath = realRoutePath.replace(/http(s)?:\/\//, '');
       // console.log('fullPath', fullPath, realRoutePath);
+      // console.log('realRoutePath', realRoutePath);
       const route = {
         path: realRoutePath,
+        // path: fullPath,
         // name: `${viewPath ? toHump(viewPath) : fullPath}-${item.id}`,
         name: fullPath,
         meta: {
+          // fullPath,
+          routeVal,
           orderNum,
           isExt,
           openMode,
-          icon: meta.icon,
+          icon: meta?.icon,
           title: meta?.title || name,
           type: item.type,
           perms: [],
           namePath: lastNamePath.concat(fullPath),
           keepAlive,
+          hideInMenu: meta?.hideInMenu,
         },
       };
-
       // 如果是目录
       if (item.type === 0) {
         let children = [];
@@ -121,8 +125,9 @@ export const generatorDynamicRouter = (asyncMenus = []) => {
     const layout = routes.find((item) => item.name == 'Layout') || {};
     // console.log(routeList, '根据后端返回的权限路由生成');
     // 给公共路由添加namePath
-    generatorNamePath(common);
-    const menus = [...common, ...routeList, ...endRoutes];
+    const newCommon = generatorNamePath(common);
+    // console.log('newCommon', newCommon);
+    const menus = [...newCommon, ...routeList, ...endRoutes];
     layout.children = menus;
     const removeRoute = router.addRoute(layout);
     // 获取所有没有包含children的路由，上面addRoute的时候，vue-router已经帮我们拍平了所有路由
@@ -131,11 +136,13 @@ export const generatorDynamicRouter = (asyncMenus = []) => {
       .filter(
         (item) =>
           (!item.children.length || Object.is(item.meta?.hideChildrenInMenu, true)) &&
-          !outsideLayout.some((n) => n.name === item.name)
+          !outsideLayout.some((n) => n.name === item.name) && 
+          item.meta?.routeVal !== '1'
       );
     // 清空所有路由
     removeRoute();
     layout.children = [...filterRoutes];
+    console.log('layout routes', layout);
     // 重新添加拍平后的路由
     router.addRoute(layout);
     console.log('所有路由', router.getRoutes());
@@ -158,19 +165,30 @@ export const generatorDynamicRouter = (asyncMenus = []) => {
 export const generatorNamePath = (
   routes = [],
   namePath = [],
-  parent = {},
+  pathPrefix = '',
 ) => {
-  routes.forEach((item) => {
+  return routes.map((item) => {
     if (item.meta && typeof item.name === 'string') {
       item.meta.namePath = Array.isArray(namePath) ? namePath.concat(item.name) : [item.name];
       item.meta.fullPath = parent?.meta?.fullPath
         ? [parent.meta.fullPath, item.path].join('/')
         : item.path;
       item.meta.fullPath = utils.uniqueSlash(item.meta.fullPath);
-
+      // let fullPath = '';
+      // if (isURL(item.path)) {
+      //   fullPath = item.path;
+      // } else {
+      //   fullPath = item.path.startsWith('/') ? item.path : `/${item.path}`;
+      //   fullPath = item.path.startsWith(pathPrefix) ? fullPath : pathPrefix + fullPath;
+      //   fullPath = [...new Set(utils.uniqueSlash(fullPath).split('/'))].join('/');
+      // }
+      // item.meta.fullPath = fullPath;
+      // item.name = fullPath;
+      // item.meta.namePath = Array.isArray(namePath) ? namePath.concat(fullPath) : [fullPath];
       if (item.children?.length) {
-        generatorNamePath(item.children, item.meta.namePath, item);
+        item.children = generatorNamePath(item.children, item.meta.namePath, item.path);
       }
     }
+    return item;
   });
 };

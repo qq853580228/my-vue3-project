@@ -6,7 +6,7 @@ const routes = [
   {
     path: '/demos',
     name: moduleName,
-    redirect: { name: `${moduleName}-custom-modal` },
+    redirect: { name: `${moduleName}-nested-routes` },
     component: RouterView,
     meta: {
       title: 'routes.demo.demo',
@@ -16,7 +16,7 @@ const routes = [
       {
         path: 'nested-routes',
         name: `${moduleName}-nested-routes`,
-        // redirect: { name: `${moduleName}-nested-routes-one` },
+        redirect: { name: `${moduleName}-nested-routes-one` },
         meta: {
           title: '嵌套路由',
           icon: 'icon-twitter',

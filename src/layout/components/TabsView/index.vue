@@ -209,6 +209,7 @@ const closeAll = () => {
       background: #fff;
       margin: 0;
       padding: 4px 20px 0 10px;
+      min-height: @tabs-height;
       user-select: none;
     }
     

@@ -35,6 +35,7 @@ export const errorRoute = {
         title: '404',
         icon: 'UserOutlined',
         hideInMenu: true,
+        hideInTabs: true,
       },
       component: () => import('@/views/404/index.vue'),
     },
