@@ -1,13 +1,21 @@
 import request from '@/utils/request';
 
 // 获取验证码
-export function getCodeImg() {
+export function getCodeImg(params) {
   return request({
-    url: '/captchaImage',
+    url: '/auth/getCode',
     headers: {
       isToken: false
     },
     method: 'get',
-    timeout: 20000
+    params,
+  })
+};
+
+export function login(data) {
+  return request({
+    url: '/auth/login',
+    method: 'post',
+    data,
   })
 };

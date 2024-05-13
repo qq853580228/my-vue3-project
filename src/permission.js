@@ -10,6 +10,7 @@ import { ACCESS_TOKEN, INDEX_MAIN_PAGE_PATH, LOGIN_PAGE_PATH, REDIRECT_NAME, whi
 router.beforeEach(async (to, from, next) => {
   NProgress.start(); // start progress bar
   const { [ACCESS_TOKEN]: token, roles, menus, afterLogin } = userInfo();
+  console.log(userInfo());
   if (token) {
     to.meta.title && useSetting().setTitle(to.meta.title);
     if (to.path === LOGIN_PAGE_PATH) {

@@ -6,7 +6,7 @@ import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
   // 环境变量
-  const env = loadEnv(mode.mode, process.cwd());
+  const env = loadEnv(mode, process.cwd());
   const { VITE_BASE_URL, VITE_DROP_CONSOLE } = env;
   return {
     base: VITE_BASE_URL,
@@ -38,7 +38,7 @@ export default defineConfig(({ mode, command }) => {
       // open: true, //自动打开
       proxy: {
         '/api': {
-          target: 'localhost:9527',
+          target: 'http://127.0.0.1:9001',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
         }

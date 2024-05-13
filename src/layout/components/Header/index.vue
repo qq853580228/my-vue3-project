@@ -16,8 +16,8 @@
       <div class="avatar-container">
         <a-dropdown class="right-menu-item hover-effect">
           <div class="avatar-wrapper">
-            <img :src="userStore.avatar" class="user-avatar" />
-            <span class="user-name">{{ userStore.name }}</span>
+            <img :src="userStore.userInfo.user_pic || userStore.avatar" class="user-avatar" />
+            <span class="user-name">{{ userStore.userInfo.username }}</span>
           </div>
           <template #overlay>
             <a-menu>
@@ -54,6 +54,7 @@
   import { userInfo } from '@/stores/modules/user';
   import useKeepAliveStore from '@/stores/modules/keepAlive';
   import { LOGIN_NAME } from '@/stores/modules/mutation-types';
+  import cache from '@/utils/cache';
 
   const settingRef = shallowRef(null);
 
@@ -97,7 +98,8 @@
         await userStore.handleLogOut();
         keepAliveStore.clear();
         // 移除标签页
-        localStorage.clear();
+        // localStorage.clear();
+        cache.local.clear();
         message.success('成功退出登录');
         await nextTick();
         try {

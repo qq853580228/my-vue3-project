@@ -3,24 +3,27 @@ import { resetRouter } from '@/routers';
 import cache from '@/utils/cache';
 import { generatorDynamicRouter } from '@/routers/generator-router';
 import defAva from '@/assets/images/logo.png'
+import { ACCESS_TOKEN } from '@/stores/modules/mutation-types';
+import { login } from '@/api/login';
 
 export const userInfo = defineStore('useUserInfo', {
   state: () => {
     return {
       name: 'bls',
       avatar: defAva,
-      accessToken: '',
+      [ACCESS_TOKEN]: '',
       userInfo: {},
       menus: [],
       // roles: ['test'],
     }
   },
   actions: {
-    async handleLogin({ accessToken }) {
+    async handleLogin(data) {
       try {
-        // const { data } = await login(params);
-        this.accessToken = accessToken;
-        return this.afterLogin();
+        const res = await login(data);
+        this[ACCESS_TOKEN] = res.data[ACCESS_TOKEN];
+        this.userInfo = res.data.userInfo;
+        await this.afterLogin();
       } catch (error) {
         return Promise.reject(error);
       }
@@ -196,7 +199,7 @@ export const userInfo = defineStore('useUserInfo', {
     },
     /** 清空token及用户信息 */
     resetToken() {
-      this.accessToken = this.name = '';
+      this[ACCESS_TOKEN] = this.name = '';
       this.menus = [];
       this.userInfo = {};
       cache.local.clear();
@@ -208,6 +211,6 @@ export const userInfo = defineStore('useUserInfo', {
     // 修改存储位置 默认在localStorage中
     storage: localStorage,
     // 只想持久化单个数据
-    paths: ['accessToken', 'userInfo'], // 要持久化的属性
+    paths: [ACCESS_TOKEN, 'userInfo'], // 要持久化的属性
   },
 });

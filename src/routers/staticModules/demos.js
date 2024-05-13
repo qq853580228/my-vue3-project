@@ -4,6 +4,15 @@ const moduleName = 'demos';
 
 const routes = [
   {
+    path: '/virtial-list',
+    name: 'VirtualList',
+    component: () => import('@/views/demos/virtualList/index.vue'),
+    meta: {
+      title: '虚拟列表',
+      icon: 'icon-twitter',
+    },
+  },
+  {
     path: '/demos',
     name: moduleName,
     redirect: { name: `${moduleName}-custom-modal` },

@@ -1,100 +1,31 @@
 import axios from 'axios';
-import { Modal, notification } from 'ant-design-vue';
+import { Modal, message as $message } from 'ant-design-vue';
+import errorCode from '@/utils/errorCode'
 import { userInfo } from '@/stores/modules/user';
-import { ACCESS_TOKEN } from '@/stores/modules/mutation-types';
+import { ACCESS_TOKEN, SUCCESS_CODE } from '@/stores/modules/mutation-types';
+import cache from './cache';
+
+// 是否显示重新登录
+export let isRelogin = { show: false };
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
+// axios.defaults.withCredentials = true; // 表示跨域请求时是否需要使用凭证，跨域访问需要发送cookie时一定要加
 // 创建axios实例
 const service = axios.create({
   baseURL: import.meta.env.VITE_BASE_API,
   timeout: 15000,
 });
 
-const err = ({ response }) => {
-  const { data, code, status, request } = response;
-  if (response) {
-    const token = localStorage.getItem(ACCESS_TOKEN);
-    switch (status) {
-      case 403:
-        notification.error({
-          message: "系统提示",
-          description: "拒绝访问",
-          duration: 4,
-        });
-        break;
-    
-      case 500:
-        if (request.type === "blob") {
-          blobToJson(data);
-          break;
-        }
-        if (token && data.message.includes("Token失效")) {
-          // update-begin- --- author:scott ------ date:20190225 ---- for:Token失效采用弹框模式，不直接跳转----
-          Modal.error({
-            title: "登录已过期",
-            content: "很抱歉，登录已过期，请重新登录",
-            okText: "重新登录",
-            mask: false,
-            onOk: () => {
-              userInfo().handleLogOut().then(() => {
-                try {
-                  const path = window.location.pathname;
-                  if (path != "/" && path.indexOf("/login") == -1) {
-                    window.location.reload();
-                  }
-                } catch (e) {
-                  window.location.reload();
-                }
-              });
-            },
-          });
-          // update-end- --- author:scott ------ date:20190225 ---- for:Token失效采用弹框模式，不直接跳转----
-        }
-        break;
-
-      case 404:
-        notification.error({
-          message: "系统提示",
-          description: "很抱歉，资源未找到!",
-          duration: 4,
-        });
-        break;
-    
-      case 401:
-        notification.error({
-          message: "系统提示",
-          description: "未授权，请重新登录",
-          duration: 4,
-        });
-        if (token) {
-          userInfo().handleLogOut().then(() => {
-            setTimeout(() => {
-              window.location.reload();
-            }, 1500);
-          });
-        }
-        break;
-        default:
-          notification.error({
-            message: "系统提示",
-            description: data.message,
-            duration: 4,
-          });
-          break;
-    }
-  }
-  return Promise.reject(error);
-};
 service.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     // 是否需要设置 token
-    const isToken = (config.headers || {}).isToken === false
+    const isToken = (config.headers || {}).isToken == false
     console.log('isToken', isToken);
     // 是否需要防止数据重复提交
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
     if (token && !isToken) {
-      config.headers["X-Access-Token"] = token; // 让每个请求携带自定义 token 请根据实际情况自行修改
+      config.headers["Authorization"] = token; // 让每个请求携带自定义 token 请根据实际情况自行修改
     }
     // update-begin-author: taoyan date:2020707 for:多租户
     // let tenantid = Vue.ls.get(TENANT_ID);
@@ -109,6 +40,7 @@ service.interceptors.request.use(
       config.url = url;
     }
     if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+      config.headers["Content-Type"] = 'application/x-www-form-urlencoded';
       const requestObj = {
         url: config.url,
         data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
@@ -164,10 +96,44 @@ service.interceptors.request.use(
   }
 );
 
-// response interceptor
+// 响应拦截器
 service.interceptors.response.use(response => {
-  return response.data;
-}, err);
+  const res = response.data;
+  const msg = res.msg || errorCode['default'];
+  if (res.code !== SUCCESS_CODE) {
+    $message.error(msg);
+    // Illegal token
+    if ([1101, 1105].includes(res.code)) {
+      // to re-login
+      Modal.confirm({
+        title: '警告',
+        content: res.msg || '账号异常，您可以取消停留在该页上，或重新登录',
+        okText: '重新登录',
+        cancelText: '取消',
+        onOk: () => {
+          localStorage.clear();
+          window.location.reload();
+        },
+      });
+    }
+
+    // throw other
+    const error = new Error(msg);
+    error.code = res.code;
+    return Promise.reject(error);
+  } else {
+    return res;
+  }
+},
+error => {
+  if (!error) {
+    // 处理 422 或者 500 的错误异常提示
+    const errMsg = error?.response?.data?.msg ?? errorCode['default'];
+    $message.error({ content: errMsg, key: errMsg });
+    error.message = errMsg;
+  }
+  return Promise.reject(error)
+})
 /**
  * Blob解析
  * @param data
@@ -181,7 +147,7 @@ function blobToJson(data) {
       console.log("jsonData", jsonData);
       if (jsonData.status === 500) {
         console.log("token----------》", token);
-        if (token && jsonData.message.includes("Token失效")) {
+        if (token && jsonData.msg.includes("Token失效")) {
           Modal.error({
             title: "登录已过期",
             content: "很抱歉，登录已过期，请重新登录",

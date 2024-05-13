@@ -32,6 +32,7 @@
   ];
 
   const activeKey = ref(route.name || tabs[0].name);
+  // console.log(typeof activeKey, activeKey);
 
   watch(activeKey, (name) => {
     router.push({ name });
